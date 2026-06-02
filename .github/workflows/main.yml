@@ -25,8 +25,7 @@ jobs:
         run: mvn clean verify --file sample-application-students-master/sample-application-backend/pom.xml
       
       - name: SonarCloud analysis
-        run: mvn -B verify sonar:sonar -Dsonar.projectKey=ineshjz -Dsonar.organization=ineshjz _KEY -Dsonar.host.url=https://sonarcloud.io -Dsonar.login=${{ secrets.SONAR_TOKEN }} --file sample-application-students-master/sample-application-backend/pom.xml -Dsonar.organization=ineshjz -Dsonar.host.url=https://sonarcloud.io -Dsonar.login=${{ secrets.SONAR_TOKEN }} --file sample-application-students-master/sample-application-backend/pom.xml
-
+        run: mvn -B verify sonar:sonar -Dsonar.projectKey=ineshjz -Dsonar.organization=ineshjz -Dsonar.host.url=https://sonarcloud.io -Dsonar.login=${{ secrets.SONAR_TOKEN }} --file sample-application-students-master/sample-application-backend/pom.xml
   build-and-push-docker-image:
     needs: test-backend
     runs-on: ubuntu-24.04
