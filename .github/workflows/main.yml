@@ -23,11 +23,27 @@ jobs:
 
       - name: Build and test with Maven
         run: mvn clean verify --file sample-application-students-master/sample-application-backend/pom.xml
-      
+
+  sonarcloud-analysis:
+    needs: test-backend
+    runs-on: ubuntu-24.04
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up JDK 21
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '21'
+
       - name: SonarCloud analysis
         run: mvn -B verify sonar:sonar -Dsonar.projectKey=ineshjz -Dsonar.organization=ineshjz -Dsonar.host.url=https://sonarcloud.io -Dsonar.login=${{ secrets.SONAR_TOKEN }} --file sample-application-students-master/sample-application-backend/pom.xml
+
   build-and-push-docker-image:
-    needs: test-backend
+    needs:
+      - test-backend
+      - sonarcloud-analysis
     runs-on: ubuntu-24.04
 
     steps:
