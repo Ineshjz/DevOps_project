@@ -1,0 +1,62 @@
+name: CD - Docker images
+
+on:
+  workflow_run:
+    workflows:
+      - CI - Backend tests
+    branches:
+      - main
+    types:
+      - completed
+
+jobs:
+  build-and-push-backend:
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+    runs-on: ubuntu-24.04
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Login to DockerHub
+        run: echo "${{ secrets.DOCKERHUB_TOKEN }}" | docker login --username ${{ secrets.DOCKERHUB_INESHJZ04 }} --password-stdin
+
+      - name: Build image and push backend
+        uses: docker/build-push-action@v6
+        with:
+          context: ./sample-application-students-master/sample-application-backend
+          tags: ${{ secrets.DOCKERHUB_INESHJZ04 }}/tp-devops-simple-api:latest
+          push: true
+
+  build-and-push-database:
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+    runs-on: ubuntu-24.04
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Login to DockerHub
+        run: echo "${{ secrets.DOCKERHUB_TOKEN }}" | docker login --username ${{ secrets.DOCKERHUB_INESHJZ04 }} --password-stdin
+
+      - name: Build image and push database
+        uses: docker/build-push-action@v6
+        with:
+          context: ./sample-application-students-master/database
+          tags: ${{ secrets.DOCKERHUB_INESHJZ04 }}/tp-devops-database:latest
+          push: true
+
+  build-and-push-httpd:
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+    runs-on: ubuntu-24.04
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Login to DockerHub
+        run: echo "${{ secrets.DOCKERHUB_TOKEN }}" | docker login --username ${{ secrets.DOCKERHUB_INESHJZ04 }} --password-stdin
+
+      - name: Build image and push httpd
+        uses: docker/build-push-action@v6
+        with:
+          context: ./http-server
+          tags: ${{ secrets.DOCKERHUB_INESHJZ04 }}/tp-devops-httpd:latest
+          push: true
