@@ -39,8 +39,8 @@ jobs:
 
       - name: SonarCloud analysis
         run: mvn -B verify sonar:sonar -Dsonar.projectKey=ineshjz -Dsonar.organization=ineshjz -Dsonar.host.url=https://sonarcloud.io -Dsonar.login=${{ secrets.SONAR_TOKEN }} --file sample-application-students-master/sample-application-backend/pom.xml
-
-  build-and-push-docker-image:
+  
+  build-and-push-backend:
     needs:
       - test-backend
       - sonarcloud-analysis
@@ -60,12 +60,38 @@ jobs:
           tags: ${{ secrets.DOCKERHUB_INESHJZ04 }}/tp-devops-simple-api:latest
           push: ${{ github.ref == 'refs/heads/main' }}
 
+  build-and-push-database:
+    needs:
+      - test-backend
+      - sonarcloud-analysis
+    runs-on: ubuntu-24.04
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Login to DockerHub
+        run: echo "${{ secrets.DOCKERHUB_TOKEN }}" | docker login --username ${{ secrets.DOCKERHUB_INESHJZ04 }} --password-stdin
+
       - name: Build image and push database
         uses: docker/build-push-action@v6
         with:
           context: ./sample-application-students-master/database
           tags: ${{ secrets.DOCKERHUB_INESHJZ04 }}/tp-devops-database:latest
           push: ${{ github.ref == 'refs/heads/main' }}
+
+  build-and-push-httpd:
+    needs:
+      - test-backend
+      - sonarcloud-analysis
+    runs-on: ubuntu-24.04
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Login to DockerHub
+        run: echo "${{ secrets.DOCKERHUB_TOKEN }}" | docker login --username ${{ secrets.DOCKERHUB_INESHJZ04 }} --password-stdin
 
       - name: Build image and push httpd
         uses: docker/build-push-action@v6
