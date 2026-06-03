@@ -1,0 +1,7 @@
+db_name: db
+db_user: usr
+db_password: pwd
+
+spring_datasource_url: jdbc:postgresql://database:5432/db
+spring_datasource_username: usr
+spring_datasource_password: pwd

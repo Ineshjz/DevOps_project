@@ -6,9 +6,9 @@
     networks:
       - name: app-network
     env:
-      SPRING_DATASOURCE_URL: "jdbc:postgresql://database:5432/{{ db_name }}"
-      SPRING_DATASOURCE_USERNAME: "{{ db_user }}"
-      SPRING_DATASOURCE_PASSWORD: "{{ db_password }}"
+      SPRING_DATASOURCE_URL: "{{ spring_datasource_url }}"
+      SPRING_DATASOURCE_USERNAME: "{{ spring_datasource_username }}"
+      SPRING_DATASOURCE_PASSWORD: "{{ spring_datasource_password }}"
     state: started
     restart_policy: always
 
