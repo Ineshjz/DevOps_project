@@ -11,3 +11,4 @@
     restart_policy: always
   vars:
      ansible_python_interpreter: /opt/docker_venv/bin/python
+
