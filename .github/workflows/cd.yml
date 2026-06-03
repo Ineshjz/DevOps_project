@@ -1,34 +1,34 @@
-name: CD devops 2025
+name: CD - Build and Push Docker Images
 
 on:
-  workflow_run:
-    workflows:
-      - CI - Backend tests
-    types:
-      - completed
+  push:
+    branches:
+      - main
 
 jobs:
-  deploy:
-    if: ${{ github.event.workflow_run.conclusion == 'success' && github.event.workflow_run.head_branch == 'main' }}
+  build-and-push:
     runs-on: ubuntu-24.04
 
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
-      - name: Install Ansible
-        run: |
-          sudo apt update
-          sudo apt install -y ansible
+      - name: Login to DockerHub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
 
-      - name: Setup SSH private key
+      - name: Build and push database image
         run: |
-          mkdir -p ~/.ssh
-          echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
-          chmod 400 ~/.ssh/id_rsa
-          ssh-keyscan -H ${{ secrets.ANSIBLE_HOST }} >> ~/.ssh/known_hosts
+          docker build -t ineshjz04/tp-devops-database ./sample-application-students-master/database
+          docker push ineshjz04/tp-devops-database
 
-      - name: Run Ansible deployment
-        working-directory: ansible
+      - name: Build and push api image
         run: |
-          ansible-playbook -i inventories/setup.yml playbook.yml
+          docker build -t ineshjz04/tp-devops-simple-api ./sample-application-students-master/simple-api
+          docker push ineshjz04/tp-devops-simple-api
+
+      - name: Build and push httpd image
+        run: |
+          docker build -t ineshjz04/tp-devops-httpd ./sample-application-students-master/http-server
+          docker push ineshjz04/tp-devops-httpd
