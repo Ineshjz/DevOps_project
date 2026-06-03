@@ -1,0 +1,16 @@
+---
+- name: Launch database container
+  docker_container:
+    name: database
+    image: ineshjz04/tp-devops-database
+    networks:
+      - name: app-network
+    env:
+      POSTGRES_DB: "{{ db_name }}"
+      POSTGRES_USER: "{{ db_user }}"
+      POSTGRES_PASSWORD: "{{ db_password }}"
+    state: started
+    restart_policy: always
+
+  vars:
+    ansible_python_interpreter: /opt/docker_venv/bin/python

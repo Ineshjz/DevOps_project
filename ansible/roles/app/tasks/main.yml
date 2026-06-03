@@ -1,0 +1,16 @@
+---
+- name: Launch application container
+  docker_container:
+    name: backend
+    image: ineshjz04/tp-devops-simple-api
+    networks:
+      - name: app-network
+    env:
+      SPRING_DATASOURCE_URL: "jdbc:postgresql://database:5432/{{ db_name }}"
+      SPRING_DATASOURCE_USERNAME: "{{ db_user }}"
+      SPRING_DATASOURCE_PASSWORD: "{{ db_password }}"
+    state: started
+    restart_policy: always
+
+  vars:
+    ansible_python_interpreter: /opt/docker_venv/bin/python

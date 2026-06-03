@@ -1,65 +1,34 @@
-name: CD - Docker images
+name: CD devops 2025
 
 on:
   workflow_run:
     workflows:
-      - CI - Backend tests
-    branches:
-      - main
+      - CI devops 2025
     types:
       - completed
 
 jobs:
-  build-and-push-backend:
-    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+  deploy:
+    if: ${{ github.event.workflow_run.conclusion == 'success' && github.event.workflow_run.head_branch == 'main' }}
     runs-on: ubuntu-24.04
 
     steps:
-      - name: Checkout code
+      - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Login to DockerHub
-        run: echo "${{ secrets.DOCKERHUB_TOKEN }}" | docker login --username ${{ secrets.DOCKERHUB_INESHJZ04 }} --password-stdin
+      - name: Install Ansible
+        run: |
+          sudo apt update
+          sudo apt install -y ansible
 
-      - name: Build image and push backend
-        uses: docker/build-push-action@v6
-        with:
-          context: ./sample-application-students-master/sample-application-backend
-          tags: ${{ secrets.DOCKERHUB_INESHJZ04 }}/tp-devops-simple-api:latest
-          push: true
+      - name: Setup SSH private key
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
+          chmod 400 ~/.ssh/id_rsa
+          ssh-keyscan -H ${{ secrets.ANSIBLE_HOST }} >> ~/.ssh/known_hosts
 
-  build-and-push-database:
-    if: ${{ github.event.workflow_run.conclusion == 'success' }}
-    runs-on: ubuntu-24.04
-
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Login to DockerHub
-        run: echo "${{ secrets.DOCKERHUB_TOKEN }}" | docker login --username ${{ secrets.DOCKERHUB_INESHJZ04 }} --password-stdin
-
-      - name: Build image and push database
-        uses: docker/build-push-action@v6
-        with:
-          context: ./sample-application-students-master/database
-          tags: ${{ secrets.DOCKERHUB_INESHJZ04 }}/tp-devops-database:latest
-          push: true
-
-  build-and-push-httpd:
-    if: ${{ github.event.workflow_run.conclusion == 'success' }}
-    runs-on: ubuntu-24.04
-
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Login to DockerHub
-        run: echo "${{ secrets.DOCKERHUB_TOKEN }}" | docker login --username ${{ secrets.DOCKERHUB_INESHJZ04 }} --password-stdin
-
-      - name: Build image and push httpd
-        uses: docker/build-push-action@v6
-        with:
-          context: ./http-server
-          tags: ${{ secrets.DOCKERHUB_INESHJZ04 }}/tp-devops-httpd:latest
-          push: true
+      - name: Run Ansible deployment
+        working-directory: ansible
+        run: |
+          ansible-playbook -i inventories/setup.yml playbook.yml
