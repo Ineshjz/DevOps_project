@@ -16,21 +16,18 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Install Ansible
+      - name: Install Ansible and Docker collection
         run: |
           sudo apt update
           sudo apt install -y ansible
-
-      - name: Install Ansible Docker collection
-        run: |
           ansible-galaxy collection install community.docker
 
       - name: Setup SSH private key
         run: |
           mkdir -p ~/.ssh
-          echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
+          printf "%s" "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
           chmod 400 ~/.ssh/id_rsa
-          ssh-keyscan -H ${{ secrets.ANSIBLE_HOST }} >> ~/.ssh/known_hosts
+          ssh-keyscan -H "${{ secrets.ANSIBLE_HOST }}" >> ~/.ssh/known_hosts
 
       - name: Run Ansible deployment
         working-directory: ansible
