@@ -3,6 +3,9 @@
   gather_facts: true
   become: true
 
+  vars_files:
+    - vars.yml
+
   roles:
     - docker
     - network
