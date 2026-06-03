@@ -20,16 +20,19 @@ jobs:
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
       - name: Build and push database image
+        working-directory: sample-application-students-master/database
         run: |
-          docker build -t ineshjz04/tp-devops-database ./sample-application-students-master/database
+          docker build -t ineshjz04/tp-devops-database .
           docker push ineshjz04/tp-devops-database
 
       - name: Build and push api image
+        working-directory: sample-application-students-master/sample-application-backend
         run: |
-          docker build -t ineshjz04/tp-devops-simple-api ./sample-application-students-master/sample-application-backend
+          docker build -t ineshjz04/tp-devops-simple-api .
           docker push ineshjz04/tp-devops-simple-api
 
       - name: Build and push httpd image
+        working-directory: sample-application-students-master/sample-application-frontend
         run: |
-          docker build -t ineshjz04/tp-devops-httpd ./sample-application-students-master/sample-application-frontend
+          docker build -t ineshjz04/tp-devops-httpd .
           docker push ineshjz04/tp-devops-httpd
