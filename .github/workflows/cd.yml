@@ -12,12 +12,6 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Login to DockerHub
-        uses: docker/login-action@v3
-        with:
-          username: ${{ secrets.DOCKERHUB_INESHJZ04 }}
-          password: ${{ secrets.DOCKERHUB_TOKEN }}
-
       - name: Build and push database image
         run: |
           docker build -t ineshjz04/tp-devops-database ./sample-application-students-master/database
@@ -25,10 +19,10 @@ jobs:
 
       - name: Build and push api image
         run: |
-          docker build -t ineshjz04/tp-devops-simple-api ./sample-application-students-master/simple-api
+          docker build -t ineshjz04/tp-devops-simple-api ./sample-application-students-master/sample-application-backend
           docker push ineshjz04/tp-devops-simple-api
 
       - name: Build and push httpd image
         run: |
-          docker build -t ineshjz04/tp-devops-httpd ./sample-application-students-master/http-server
+          docker build -t ineshjz04/tp-devops-httpd ./sample-application-students-master/sample-application-frontend
           docker push ineshjz04/tp-devops-httpd
