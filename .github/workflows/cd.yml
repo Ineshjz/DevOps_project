@@ -1,38 +1,35 @@
-name: CD - Build and Push Docker Images
+name: Deployment - Ansible
 
 on:
-  push:
-    branches:
-      - main
+  workflow_run:
+    workflows:
+      - CD - Build and Push Docker Images
+    types:
+      - completed
 
 jobs:
-  build-and-push:
+  deploy:
+    if: ${{ github.event.workflow_run.conclusion == 'success' && github.event.workflow_run.head_branch == 'main' }}
     runs-on: ubuntu-24.04
 
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Login to DockerHub
-        uses: docker/login-action@v3
-        with:
-          username: ${{ secrets.DOCKERHUB_INESHJZ04 }}
-          password: ${{ secrets.DOCKERHUB_TOKEN }}
-
-      - name: Build and push database image
-        working-directory: sample-application-students-master/database
+      - name: Install Ansible and Docker collection
         run: |
-          docker build -t ineshjz04/tp-devops-database .
-          docker push ineshjz04/tp-devops-database
+          sudo apt update
+          sudo apt install -y ansible
+          ansible-galaxy collection install community.docker
 
-      - name: Build and push api image
-        working-directory: sample-application-students-master/sample-application-backend
+      - name: Setup SSH private key
         run: |
-          docker build -t ineshjz04/tp-devops-simple-api .
-          docker push ineshjz04/tp-devops-simple-api
+          mkdir -p ~/.ssh
+          printf "%s" "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
+          chmod 400 ~/.ssh/id_rsa
+          ssh-keyscan -H "${{ secrets.ANSIBLE_HOST }}" >> ~/.ssh/known_hosts
 
-      - name: Build and push httpd image
-        working-directory: sample-application-students-master/sample-application-frontend
+      - name: Run Ansible deployment
+        working-directory: ansible
         run: |
-          docker build -t ineshjz04/tp-devops-httpd .
-          docker push ineshjz04/tp-devops-httpd
+          ansible-playbook -i inventories/setup.yml playbook.yml
