@@ -21,6 +21,10 @@ jobs:
           sudo apt update
           sudo apt install -y ansible
 
+      - name: Install Ansible Docker collection
+        run: |
+          ansible-galaxy collection install community.docker
+
       - name: Setup SSH private key
         run: |
           mkdir -p ~/.ssh
