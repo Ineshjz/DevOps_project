@@ -10,7 +10,14 @@ jobs:
     runs-on: ubuntu-24.04
 
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Login to DockerHub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_INESHJZ04 }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
 
       - name: Build and push database image
         run: |
