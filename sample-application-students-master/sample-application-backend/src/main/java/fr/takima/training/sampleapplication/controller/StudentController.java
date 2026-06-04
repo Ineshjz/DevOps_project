@@ -11,7 +11,7 @@ import java.net.URI;
 import java.util.Optional;
 
 @RestController
-@RequestMapping(value = "/api/students")
+@RequestMapping(value = "/students")
 public class StudentController {
 
     private final StudentService studentService;
