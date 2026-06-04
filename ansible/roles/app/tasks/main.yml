@@ -1,7 +1,7 @@
 ---
 - name: Launch application container
   docker_container:
-    name: backend
+    name: simple-api-container
     image: ineshjz04/tp-devops-simple-api
     networks:
       - name: app-network
@@ -12,5 +12,3 @@
     state: started
     restart_policy: always
 
-  vars:
-    ansible_python_interpreter: /opt/docker_venv/bin/python
