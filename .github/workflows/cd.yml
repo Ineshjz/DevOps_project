@@ -31,8 +31,8 @@ jobs:
           docker build -t ineshjz04/tp-devops-simple-api .
           docker push ineshjz04/tp-devops-simple-api
 
-      - name: Build and push httpd image
-        working-directory: http-server
+      - name: Build and push frontend image
+        working-directory: sample-application-students-master/sample-application-frontend
         run: |
           docker build -t ineshjz04/tp-devops-httpd .
           docker push ineshjz04/tp-devops-httpd
